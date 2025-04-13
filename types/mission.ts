@@ -34,6 +34,12 @@ export interface LunaFundContextType {
   getContributions: (
     pId: number
   ) => Promise<{ contributor: string; amount: string }[]>;
+  createRequest: (
+    pId: number,
+    description: string,
+    amount: number,
+    recipient: string
+  ) => Promise<void>;
   getMissionRequests: (pId: number) => Promise<Request[]>;
   checkIfWalletConnected: () => Promise<void>;
   connectWallet: () => Promise<void>;

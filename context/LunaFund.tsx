@@ -29,6 +29,7 @@ export const LunaFundContext = React.createContext<LunaFundContextType>({
     completed: false,
   }),
   getUserMissions: async () => [],
+  createRequest: async () => {},
   getMissionRequests: async () => [],
   contributeFuel: async () => {},
   getContributions: async () => [],
@@ -193,6 +194,36 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
     return parsedContributors;
   };
 
+  const createRequest = async (
+    pId: number,
+    description: string,
+    amount: number,
+    recipient: string
+  ) => {
+    const Web3Modal = (await import("web3modal")).default;
+    const { ethers } = await import("ethers");
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const contract = await fetchContract(signer);
+
+    try {
+      const transaction = await contract.createRequest(
+        pId,
+        description,
+        ethers.utils.parseEther(amount.toString()),
+        recipient
+      );
+
+      await transaction.wait();
+      console.log("Transaction completed:", transaction);
+    } catch (error) {
+      console.log("Transaction failed to create request:", error);
+    }
+  };
+
   const getMissionRequests = async (pId: number) => {
     const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
@@ -266,6 +297,7 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
         getUserMissions,
         contributeFuel,
         getContributions,
+        createRequest,
         getMissionRequests,
         checkIfWalletConnected,
         connectWallet,
