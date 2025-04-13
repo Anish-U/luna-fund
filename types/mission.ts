@@ -1,10 +1,11 @@
 export interface Mission {
+  completed: boolean;
   creator: string;
   title: string;
   description: string;
   targetAmount: number;
   totalRaised: number;
-  completed: boolean;
+  pId: number;
 }
 
 export interface CreateMissionProps {
@@ -17,6 +18,7 @@ export interface LunaFundContextType {
   titleData: string;
   currentAccount: string;
   createMission: (mission: CreateMissionProps) => Promise<void>;
+  getMission: (pId: number) => Promise<Mission>;
   getAllMissions: () => Promise<Mission[]>;
   getUserMissions: () => Promise<Mission[]>;
   contributeFuel: (pId: number, amount: number) => Promise<void>;

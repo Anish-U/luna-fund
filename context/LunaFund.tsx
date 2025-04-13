@@ -14,9 +14,26 @@ const fetchContract = async (signerOrProvider: any): Promise<any> => {
   return new ethers.Contract(lunaFundAddress, lunaFundABI, signerOrProvider);
 };
 
-export const LunaFundContext = React.createContext<LunaFundContextType | null>(
-  null
-);
+export const LunaFundContext = React.createContext<LunaFundContextType>({
+  titleData: "",
+  currentAccount: "",
+  createMission: async () => {},
+  getAllMissions: async () => [],
+  getMission: async () => ({
+    pId: 0,
+    creator: "",
+    title: "",
+    description: "",
+    targetAmount: 0,
+    totalRaised: 0,
+    completed: false,
+  }),
+  getUserMissions: async () => [],
+  contributeFuel: async () => {},
+  getContributions: async () => [],
+  checkIfWalletConnected: async () => {},
+  connectWallet: async () => {},
+});
 
 export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -49,22 +66,49 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getAllMissions = async () => {
+  const getMission = async (pId: number) => {
     const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = await fetchContract(provider);
 
-    const missions = await contract.getMissions();
+    const mission = await contract.getMission(pId);
 
-    return missions.map((mission: Mission, i: number) => ({
+    return {
       creator: mission.creator,
       title: mission.title,
       description: mission.description,
       targetAmount: ethers.utils.formatEther(mission.targetAmount.toString()),
       totalRaised: ethers.utils.formatEther(mission.totalRaised.toString()),
       completed: mission.completed,
+      pId: pId,
+    } as unknown as Mission;
+  };
+
+  const getAllMissions = async () => {
+    const { ethers } = await import("ethers");
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = await fetchContract(provider);
+
+    const [
+      creators,
+      titles,
+      descriptions,
+      targetAmounts,
+      totalRaisedAmounts,
+      completions,
+    ] = await contract.getMissions();
+
+    const missions = creators.map((_: string, i: number) => ({
+      creator: creators[i],
+      title: titles[i],
+      description: descriptions[i],
+      targetAmount: ethers.utils.formatEther(targetAmounts[i].toString()),
+      totalRaised: ethers.utils.formatEther(totalRaisedAmounts[i].toString()),
+      completed: completions[i],
       pId: i,
     }));
+
+    return missions;
   };
 
   const getUserMissions = async () => {
@@ -73,24 +117,34 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
     const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = await fetchContract(provider);
-    const missions = await contract.getMissions();
 
     const accounts = await window.ethereum.request({ method: "eth_accounts" });
     const currentUser = accounts[0];
 
-    const filteredCampaigns = missions.filter(
-      (mission: Mission) => mission.creator === currentUser
-    );
+    const [
+      creators,
+      titles,
+      descriptions,
+      targetAmounts,
+      totalRaisedAmounts,
+      completions,
+    ] = await contract.getMissions();
 
-    return filteredCampaigns.map((mission: Mission, i: number) => ({
-      creator: mission.creator,
-      title: mission.title,
-      description: mission.description,
-      targetAmount: ethers.utils.formatEther(mission.targetAmount.toString()),
-      totalRaised: ethers.utils.formatEther(mission.totalRaised.toString()),
-      completed: mission.completed,
-      pId: i,
-    }));
+    const missions = creators
+      .map((_: string, i: number) => ({
+        creator: creators[i],
+        title: titles[i],
+        description: descriptions[i],
+        targetAmount: ethers.utils.formatEther(targetAmounts[i].toString()),
+        totalRaised: ethers.utils.formatEther(totalRaisedAmounts[i].toString()),
+        completed: completions[i],
+        pId: i,
+      }))
+      .filter(
+        (mission: { creator: string }) => mission.creator === currentUser
+      );
+
+    return missions;
   };
 
   const contributeFuel = async (pId: number, amount: number) => {
@@ -184,6 +238,7 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
         titleData,
         currentAccount,
         createMission,
+        getMission,
         getAllMissions,
         getUserMissions,
         contributeFuel,
