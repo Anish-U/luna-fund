@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity 0.8.18;
 
 contract LunaFund {
     uint public missionCount;
@@ -114,6 +114,24 @@ contract LunaFund {
         uint _missionId
     ) public view returns (address[] memory) {
         return missions[_missionId].contributors;
+    }
+
+    function getContributions(
+        uint _missionId
+    ) public view returns (address[] memory, uint[] memory) {
+        Mission storage m = missions[_missionId];
+        uint len = m.contributors.length;
+
+        address[] memory addresses = new address[](len);
+        uint[] memory amounts = new uint[](len);
+
+        for (uint i = 0; i < len; i++) {
+            address contributor = m.contributors[i];
+            addresses[i] = contributor;
+            amounts[i] = m.contributions[contributor];
+        }
+
+        return (addresses, amounts);
     }
 
     function getRequestsCount(uint _missionId) public view returns (uint) {

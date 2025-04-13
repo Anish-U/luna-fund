@@ -1,4 +1,6 @@
-import { ethers as _ethers } from "hardhat";
+import hardhat from "hardhat";
+
+const _ethers = hardhat.ethers;
 
 async function main() {
   const LunaFund = await _ethers.getContractFactory("LunaFund");
