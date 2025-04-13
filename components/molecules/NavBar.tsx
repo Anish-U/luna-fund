@@ -13,7 +13,7 @@ const NavBar: FC<NavBarProps> = () => {
   const { currentAccount, connectWallet } = useContext(LunaFundContext);
 
   return (
-    <header className="flex justify-between items-center pb-2 md:px-8 px-4 p-2">
+    <header className="flex justify-between items-center pb-2 md:px-8 px-4 p-2 lg:px-20">
       <Link href="/">
         <div className="flex items-center justify-center">
           <Image
@@ -21,9 +21,9 @@ const NavBar: FC<NavBarProps> = () => {
             alt="logo"
             height={150}
             width={150}
-            className="object-cover -ml-8 h-48 w-48 md:h-32 md:w-32 md:-ml-2"
+            className="object-cover -ml-12 h-48 w-48 md:h-32 md:w-32 md:-ml-6 lg:-ml-10"
           />
-          <h1 className="--ml-4 text-4xl hidden md:block font-primary text-nowrap">
+          <h1 className="--ml-8 text-4xl hidden md:block font-primary text-nowrap">
             Luna Fund
           </h1>
         </div>

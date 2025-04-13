@@ -31,7 +31,7 @@ const CreateMissionPageSection: FC<CreateMissionPageSectionProps> = ({
       setIsLoading(true);
       const res = await createMission();
       console.log("Success: ", res);
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
         title: "Success",
         text: "Mission created successfully",
@@ -91,7 +91,7 @@ const CreateMissionPageSection: FC<CreateMissionPageSectionProps> = ({
         />
       </div>
       <div className="mt-4 md:mt-6 w-full">
-        <Button type="secondary" onClick={_createMission} disabled={isLoading}>
+        <Button type="primary" onClick={_createMission} disabled={isLoading}>
           Launch Mission
         </Button>
       </div>

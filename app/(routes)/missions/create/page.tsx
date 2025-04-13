@@ -25,7 +25,7 @@ export default function Page({}: PageProps) {
   };
 
   return (
-    <div className="md:px-20 px-8 p-2 flex-1 flex items-center justify-center">
+    <div className="md:px-20 px-6 p-2 flex-1 flex items-center justify-center">
       <div className="flex flex-col gap-4 w-full md:w-fit">
         <Link
           href="/missions"

@@ -1,7 +1,6 @@
 "use client";
 
 import { FC, useContext, useEffect, useState } from "react";
-import Image from "next/image";
 import Swal from "sweetalert2";
 
 import ProgressBar from "@/components/atoms/progress-bar";
@@ -17,38 +16,21 @@ export interface MissionPageSectionProps {
 const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
   const { getContributions, contributeFuel, getMissionRequests } =
     useContext(LunaFundContext);
-  const inputValue = 1;
 
+  const [inputValue, setInputValue] = useState<number>(1);
   const [contributions, setContributions] = useState<Contribution[]>();
   const [missionRequests, setMissionRequests] = useState<Request[]>();
 
-  const randomImage = () => {
-    const images = ["1", "2", "3", "4"];
-    return images[Math.floor(Math.random() * images.length)];
-  };
-
-  const contribute = async () => {
-    const { value: contributionAmount } = await Swal.fire({
-      title: "Enter your contribution",
-      input: "number",
-      inputLabel: `${
-        mission.targetAmount - mission.totalRaised
-      } ETH to be raised`,
-      inputValue,
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) {
-          return "You need to write something!";
-        }
-        if (Number(value) <= 0) {
-          return "Value must be greater than 0";
-        }
-      },
-    });
-
-    if (contributionAmount) {
-      await contributeFuel(mission.pId, contributionAmount);
+  const contribute = () => {
+    if (!inputValue || inputValue <= 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Value must be greater than 0",
+      });
     }
+
+    contributeFuel(mission.pId, inputValue);
   };
 
   useEffect(() => {
@@ -67,75 +49,101 @@ const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
   }, [getContributions, getMissionRequests, mission.pId]);
 
   return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 mb-5">
-        <h1 className="text-4xl font-primary col-span-1 md:col-span-2">
-          Mission: {mission.title}
-        </h1>
-        <Image
-          src={`/images/planets/${randomImage()}.png`}
-          alt="logo"
-          height={500}
-          width={500}
-          className="col-span-1 absolute top-10 right-14 hidden lg:block"
-        />
-      </div>
-      <div className="text-md py-2">Creator: {mission.creator}</div>
-      <div className="lg:w-[65%] text-lg text-justify">
-        Goal: {mission.description}
-      </div>
-      <div className="flex justify-center flex-col gap-2 lg:w-[65%] mt-4 md:mt-6">
-        <ProgressBar
-          percentage={
-            ((mission.totalRaised || 0) / (mission.targetAmount || 1)) * 100
-          }
-        />
-        <div className="flex justify-between">
-          <p className="text-sm">{mission.totalRaised || 0} ETH</p>
-          <p className="text-sm">{mission.targetAmount || 0} ETH</p>
+    <div className="flex flex-col gap-4 py-4 px-2">
+      <div className="grid grids-col-1 md:grid-cols-2 gap-6 md:gap-8 md:mb-4">
+        <div className="flex flex-col gap-4">
+          <h1 className="text-2xl md:text-4xl font-primary">
+            Mission: {mission.title}
+          </h1>
+          <div className="text-xs md:text-md py-2 text-wrap">
+            Creator: {mission.creator}
+          </div>
+          <div className="text-sm md:text-md text-justify">
+            Goal: {mission.description}
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 justify-evenly">
+          <div className="w-full flex flex-col gap-3 justify-center border-2 border-white/20 bg-blue-light rounded-lg p-2 px-3">
+            <p className="text-sm md:text-md">Fuel Raised</p>
+            <p className="text-lg md:text-2xl font-bold">
+              {mission.totalRaised || 0} ETH
+            </p>
+            <p className="text-sm md:text-md">
+              Target of {mission.targetAmount || 0} ETH
+            </p>
+            <ProgressBar
+              percentage={
+                ((mission.totalRaised || 0) / (mission.targetAmount || 1)) * 100
+              }
+            />
+          </div>
+
+          <div className="w-full flex flex-col gap-3 justify-center border-2 border-blue-light text-blue-dark bg-white rounded-lg p-2 px-3">
+            <h1 className="text-md md:text-lg font-primary">
+              Raise Fuel Now !
+            </h1>
+            <input
+              type="number"
+              value={inputValue}
+              onChange={(e) => setInputValue(Number(e.target.value))}
+              className="py-2 px-3 rounded-lg"
+            />
+            <Button
+              type="secondary"
+              onClick={contribute}
+              disabled={mission.completed}
+            >
+              Donate Fuel
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="mt-4 md:mt-6">
-        <Button
-          type="secondary"
-          onClick={contribute}
-          disabled={mission.completed}
-        >
-          Donate Fuel
-        </Button>
-      </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 md:mb-4">
         <h1 className="text-2xl my-4 font-primary">Contributors</h1>
-        <div className="flex flex-col gap-2 w-[80%]">
-          {contributions && contributions.length > 0 ? (
-            contributions.map((contribution) => (
-              <div
-                className="flex justify-between"
-                key={contribution.contributor}
-              >
-                <p className="text-sm">{contribution.contributor}</p>
-                <p className="text-sm">{contribution.amount} ETH</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm">No contributions yet</p>
-          )}
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {contributions && contributions.length > 0 ? (
+              contributions.map((contribution) => (
+                <div
+                  className="flex flex-col text-center bg-white rounded-lg text-blue-dark gap-2 p-2 px-3 text-wrap"
+                  key={contribution.contributor}
+                >
+                  <p className="text-sm md:text-lg font-bold">
+                    {contribution.amount} ETH
+                  </p>
+                  <p className="text-xs md:text-sm text-wrap">
+                    {contribution.contributor}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs md:text-sm">No contributions yet !</p>
+            )}
+          </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 md:mb-4">
         <h1 className="text-2xl my-4 font-primary">Withdrawal Requests</h1>
-        <div className="flex flex-col gap-2 w-[80%]">
-          {missionRequests && missionRequests.length > 0 ? (
-            missionRequests.map((request) => (
-              <div className="flex justify-between" key={request.rId}>
-                <p className="text-sm">{request.description}</p>
-                <p className="text-sm">{request.amount} ETH</p>
-                <p className="text-sm">{request.recipient}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm">No withdrawal requests yet</p>
-          )}
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {missionRequests && missionRequests.length > 0 ? (
+              missionRequests.map((request) => (
+                <div
+                  className="flex flex-col text-center bg-white rounded-lg text-blue-dark gap-2 p-2 px-3 text-wrap"
+                  key={request.rId}
+                >
+                  <p className="text-sm md:text-lg font-bold">
+                    {request.amount} ETH
+                  </p>
+                  <p className="text-xs md:text-sm text-wrap">
+                    {request.recipient}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs md:text-sm">No withdrawal requests yet !</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
