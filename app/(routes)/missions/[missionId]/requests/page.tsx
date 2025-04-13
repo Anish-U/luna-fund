@@ -3,11 +3,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BigNumber } from "ethers";
 import { BsArrowLeft } from "react-icons/bs";
+
+import Button from "@/components/atoms/button";
 
 import { LunaFundContext } from "@/context/LunaFund";
 import { Request } from "@/types/mission";
-import { BigNumber } from "ethers";
 
 export interface PageProps {
   params: {
@@ -51,7 +53,12 @@ export default function Page({ params }: PageProps) {
           Back to Mission Page
         </p>
       </Link>
-      <h2 className="text-2xl font-bold mb-2 md:mb-4">Withdrawal Requests</h2>
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-bold mb-2 md:mb-4">Withdrawal Requests</h2>
+        <Link href={`/missions/${missionId}/requests/create`} className="">
+          <Button type="accent">Raise Request</Button>
+        </Link>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
         {requests && requests.length === 0 ? (
           <p className="text-gray-400">No withdrawal requests found.</p>
