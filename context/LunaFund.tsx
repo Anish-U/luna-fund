@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import Wenb3Modal from "web3modal";
-import { ethers, Signer } from "ethers";
+"use client";
 
-import { lunaFundAddress, lunaFundABI } from "./constants";
+import React, { useEffect, useState } from "react";
+import { lunaFundAddress, lunaFundABI } from "@/constants/smartContract";
 import {
   CreateMissionProps,
   LunaFundContextType,
   Mission,
 } from "@/types/mission";
 
-const fetchContract = (
-  signerOrProvider: Signer | ethers.providers.Provider | undefined
-) => new ethers.Contract(lunaFundAddress, lunaFundABI, signerOrProvider);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetchContract = async (signerOrProvider: any): Promise<any> => {
+  const { ethers } = await import("ethers");
+  return new ethers.Contract(lunaFundAddress, lunaFundABI, signerOrProvider);
+};
 
 export const LunaFundContext = React.createContext<LunaFundContextType | null>(
   null
@@ -25,13 +26,14 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const createMission = async (mission: CreateMissionProps) => {
     const { title, description, targetAmount } = mission;
+    const Web3Modal = (await import("web3modal")).default;
+    const { ethers } = await import("ethers");
 
-    const web3Modal = new Wenb3Modal();
+    const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
-
     const signer = provider.getSigner();
-    const contract = fetchContract(signer);
+    const contract = await fetchContract(signer);
 
     try {
       const transaction = await contract.createMission(
@@ -41,7 +43,6 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
       );
 
       await transaction.wait();
-
       console.log("transaction call complete: ", transaction);
     } catch (error) {
       console.log("transaction failed: ", error);
@@ -49,12 +50,13 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getAllMissions = async () => {
+    const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
-    const contract = fetchContract(provider);
+    const contract = await fetchContract(provider);
 
     const missions = await contract.getMissions();
 
-    const parsedMissions = missions.map((mission: Mission, i: number) => ({
+    return missions.map((mission: Mission, i: number) => ({
       creator: mission.creator,
       title: mission.title,
       description: mission.description,
@@ -63,48 +65,43 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
       completed: mission.completed,
       pId: i,
     }));
-
-    return parsedMissions;
   };
 
   const getUserMissions = async () => {
+    if (typeof window === "undefined") return [];
+
+    const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
-    const contract = fetchContract(provider);
-
+    const contract = await fetchContract(provider);
     const missions = await contract.getMissions();
-    const accounts = await window.ethereum.request({ method: "eth_accounts" });
 
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
     const currentUser = accounts[0];
 
-    console.log(currentUser);
-
     const filteredCampaigns = missions.filter(
-      (mission: Mission) =>
-        mission.creator === "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      (mission: Mission) => mission.creator === currentUser
     );
 
-    const parsedMissions = filteredCampaigns.map(
-      (mission: Mission, i: number) => ({
-        creator: mission.creator,
-        title: mission.title,
-        description: mission.description,
-        targetAmount: ethers.utils.formatEther(mission.targetAmount.toString()),
-        totalRaised: ethers.utils.formatEther(mission.totalRaised.toString()),
-        completed: mission.completed,
-        pId: i,
-      })
-    );
-
-    return parsedMissions;
+    return filteredCampaigns.map((mission: Mission, i: number) => ({
+      creator: mission.creator,
+      title: mission.title,
+      description: mission.description,
+      targetAmount: ethers.utils.formatEther(mission.targetAmount.toString()),
+      totalRaised: ethers.utils.formatEther(mission.totalRaised.toString()),
+      completed: mission.completed,
+      pId: i,
+    }));
   };
 
   const contributeFuel = async (pId: number, amount: number) => {
-    const web3Modal = new Wenb3Modal();
+    const Web3Modal = (await import("web3modal")).default;
+    const { ethers } = await import("ethers");
+
+    const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
-
     const signer = provider.getSigner();
-    const contract = fetchContract(signer);
+    const contract = await fetchContract(signer);
 
     try {
       const transaction = await contract.contribute(pId, {
@@ -113,9 +110,7 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
 
       await transaction.wait();
       console.log("transaction call complete: ", transaction);
-
       location.reload();
-
       return transaction;
     } catch (error) {
       console.log("transaction failed: ", error);
@@ -123,8 +118,9 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getContributions = async (pId: number) => {
+    const { ethers } = await import("ethers");
     const provider = new ethers.providers.JsonRpcProvider();
-    const contract = fetchContract(provider);
+    const contract = await fetchContract(provider);
 
     const [contributors, amounts] = await contract.getContributors(pId);
 
@@ -141,11 +137,12 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const checkIfWalletConnected = async () => {
-    try {
-      if (!window.ethereum) {
-        return console.log("Install MetaMask");
-      }
+    if (typeof window === "undefined" || !window.ethereum) {
+      console.log("Install MetaMask");
+      return;
+    }
 
+    try {
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
       });
@@ -156,7 +153,7 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("No account found");
       }
     } catch (error) {
-      console.log("Something went wrong while connecting to wallet: ", error);
+      console.log("Error connecting wallet: ", error);
     }
   };
 
@@ -165,18 +162,19 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const connectWallet = async () => {
-    try {
-      if (!window.ethereum) {
-        return console.log("Install MetaMask");
-      }
+    if (typeof window === "undefined" || !window.ethereum) {
+      console.log("Install MetaMask");
+      return;
+    }
 
+    try {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
 
       setCurrentAccount(accounts[0]);
     } catch (error) {
-      console.log("Something went wrong while connecting to wallet: ", error);
+      console.log("Error requesting wallet connection: ", error);
     }
   };
 

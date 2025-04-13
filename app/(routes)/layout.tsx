@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
-import { LunaFundProvider } from "../../context/LunaFund";
+import ClientWrapper from "@/wrapper/clientWrapper";
+import NavBar from "@/components/molecules/NavBar";
+import Footer from "@/components/molecules/Footer";
 
-import "../globals.css";
+import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Luna Fund",
@@ -17,7 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <LunaFundProvider>{children}</LunaFundProvider>
+        <ClientWrapper>
+          <NavBar />
+          {children}
+          <Footer />
+        </ClientWrapper>
       </body>
     </html>
   );
