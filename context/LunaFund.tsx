@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Wenb3Modal from "web3modal";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 
 import { lunaFundAddress, lunaFundABI } from "./constants";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/types/mission";
 
 const fetchContract = (
-  signerOrProvider: ethers.Signer | ethers.providers.Provider | undefined
+  signerOrProvider: Signer | ethers.providers.Provider | undefined
 ) => new ethers.Contract(lunaFundAddress, lunaFundABI, signerOrProvider);
 
 export const LunaFundContext = React.createContext<LunaFundContextType | null>(
