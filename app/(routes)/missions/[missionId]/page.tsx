@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BsArrowLeft } from "react-icons/bs";
+
+import MissionSection from "@/components/organisms/mission";
 
 import { LunaFundContext } from "@/context/LunaFund";
 import { Mission } from "@/types/mission";
-
-import MissionSection from "@/components/organisms/mission";
-import { BsArrowLeft } from "react-icons/bs";
 
 export interface PageProps {
   params: {
@@ -16,6 +17,8 @@ export interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
+  const router = useRouter();
+
   const { getMission } = useContext(LunaFundContext);
   const [mission, setMission] = useState<Mission>();
 
@@ -23,6 +26,12 @@ export default function Page({ params }: PageProps) {
     const _getMission = async () => {
       const { missionId } = await params;
       const res = await getMission(parseInt(missionId));
+      if (
+        res.targetAmount == 0 &&
+        res.creator === "0x0000000000000000000000000000000000000000"
+      ) {
+        router.push("/missions");
+      }
       setMission({
         pId: res.pId,
         creator: res.creator,
@@ -35,7 +44,7 @@ export default function Page({ params }: PageProps) {
     };
 
     _getMission();
-  }, [getMission, params]);
+  }, [getMission, params, router]);
 
   return (
     <div className="lg:px-20 md:px-10 px-6 p-2 flex flex-col gap-4 flex-1">
