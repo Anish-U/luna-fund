@@ -14,6 +14,15 @@ export interface CreateMissionProps {
   targetAmount: number;
 }
 
+export interface Request {
+  amount: number;
+  recipient: string;
+  approvalCount: number;
+  completed: boolean;
+  description: string;
+  rId: number;
+}
+
 export interface LunaFundContextType {
   titleData: string;
   currentAccount: string;
@@ -25,6 +34,7 @@ export interface LunaFundContextType {
   getContributions: (
     pId: number
   ) => Promise<{ contributor: string; amount: string }[]>;
+  getMissionRequests: (pId: number) => Promise<Request[]>;
   checkIfWalletConnected: () => Promise<void>;
   connectWallet: () => Promise<void>;
 }

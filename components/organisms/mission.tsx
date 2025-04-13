@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import ProgressBar from "@/components/atoms/progress-bar";
 import Button from "@/components/atoms/button";
 
-import { Contribution, Mission } from "@/types/mission";
+import { Contribution, Mission, Request } from "@/types/mission";
 import { LunaFundContext } from "@/context/LunaFund";
 
 export interface MissionPageSectionProps {
@@ -15,10 +15,12 @@ export interface MissionPageSectionProps {
 }
 
 const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
-  const { getContributions, contributeFuel } = useContext(LunaFundContext);
+  const { getContributions, contributeFuel, getMissionRequests } =
+    useContext(LunaFundContext);
   const inputValue = 1;
 
   const [contributions, setContributions] = useState<Contribution[]>();
+  const [missionRequests, setMissionRequests] = useState<Request[]>();
 
   const randomImage = () => {
     const images = ["1", "2", "3", "4"];
@@ -55,8 +57,14 @@ const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
       setContributions(contributions as unknown as Contribution[]);
     };
 
+    const _getWithdrawals = async () => {
+      const withdrawals = await getMissionRequests(mission.pId);
+      setMissionRequests(withdrawals as unknown as Request[]);
+    };
+
     _getContributions();
-  }, [getContributions, mission.pId]);
+    _getWithdrawals();
+  }, [getContributions, getMissionRequests, mission.pId]);
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -111,6 +119,22 @@ const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
             ))
           ) : (
             <p className="text-sm">No contributions yet</p>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl my-4 font-primary">Withdrawal Requests</h1>
+        <div className="flex flex-col gap-2 w-[80%]">
+          {missionRequests && missionRequests.length > 0 ? (
+            missionRequests.map((request) => (
+              <div className="flex justify-between" key={request.rId}>
+                <p className="text-sm">{request.description}</p>
+                <p className="text-sm">{request.amount} ETH</p>
+                <p className="text-sm">{request.recipient}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm">No withdrawal requests yet</p>
           )}
         </div>
       </div>

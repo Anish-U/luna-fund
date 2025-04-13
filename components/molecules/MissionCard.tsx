@@ -32,7 +32,7 @@ const MissionCard: FC<MissionCard> = ({ mission }) => {
           />
           <div className="flex justify-between">
             <p className="text-sm">{mission.totalRaised || 0} ETH</p>
-            <p className="text-sm">{mission.targetAmount || 0} ETH</p>
+            <p className="text-sm">{mission.targetAmount || 0} ETH (Target)</p>
           </div>
         </div>
       </div>

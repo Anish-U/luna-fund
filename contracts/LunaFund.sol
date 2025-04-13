@@ -85,6 +85,39 @@ contract LunaFund {
         r.approvalCount = 0;
     }
 
+    // Get all Requests for a Mission
+    function getMissionRequests(
+        uint _missionId
+    )
+        public
+        view
+        returns (
+            uint[] memory amounts,
+            address[] memory recipients,
+            uint[] memory approvalCounts,
+            bool[] memory completions,
+            string[] memory descriptions
+        )
+    {
+        Mission storage m = missions[_missionId];
+        uint len = m.requests.length;
+
+        recipients = new address[](len);
+        approvalCounts = new uint[](len);
+        completions = new bool[](len);
+        descriptions = new string[](len);
+        amounts = new uint[](len);
+
+        for (uint i = 0; i < len; i++) {
+            Request storage r = m.requests[i];
+            recipients[i] = r.recipient;
+            approvalCounts[i] = r.approvalCount;
+            completions[i] = r.completed;
+            descriptions[i] = r.description;
+            amounts[i] = r.amount;
+        }
+    }
+
     // Approve a Request (by Contributor)
     function approveRequest(uint _missionId, uint _requestIndex) public {
         Mission storage m = missions[_missionId];

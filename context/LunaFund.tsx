@@ -29,6 +29,7 @@ export const LunaFundContext = React.createContext<LunaFundContextType>({
     completed: false,
   }),
   getUserMissions: async () => [],
+  getMissionRequests: async () => [],
   contributeFuel: async () => {},
   getContributions: async () => [],
   checkIfWalletConnected: async () => {},
@@ -192,6 +193,26 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
     return parsedContributors;
   };
 
+  const getMissionRequests = async (pId: number) => {
+    const { ethers } = await import("ethers");
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = await fetchContract(provider);
+
+    const [amounts, recipients, approvalCounts, completions, descriptions] =
+      await contract.getMissionRequests(pId);
+
+    const requests = amounts.map((_: number, i: number) => ({
+      amount: ethers.utils.formatEther(amounts[i].toString()),
+      recipient: recipients[i],
+      approvalCount: approvalCounts[i],
+      completed: completions[i],
+      description: descriptions[i],
+      rId: i,
+    }));
+
+    return requests;
+  };
+
   const checkIfWalletConnected = async () => {
     if (typeof window === "undefined" || !window.ethereum) {
       console.log("Install MetaMask");
@@ -245,6 +266,7 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
         getUserMissions,
         contributeFuel,
         getContributions,
+        getMissionRequests,
         checkIfWalletConnected,
         connectWallet,
       }}
