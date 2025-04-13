@@ -5,6 +5,8 @@ import NavBar from "@/components/molecules/NavBar";
 import Footer from "@/components/molecules/Footer";
 
 import "@/app/globals.css";
+import "@fontsource/inter";
+import "@fontsource/orbitron/600.css";
 
 export const metadata: Metadata = {
   title: "Luna Fund",
@@ -20,9 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ClientWrapper>
-          <NavBar />
-          {children}
-          <Footer />
+          <div className="flex flex-col min-h-screen font-secondary">
+            <NavBar />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </div>
         </ClientWrapper>
       </body>
     </html>

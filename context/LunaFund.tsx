@@ -176,9 +176,11 @@ export const LunaFundProvider: React.FC<{ children: React.ReactNode }> = ({
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = await fetchContract(provider);
 
-    const [contributors, amounts] = await contract.getContributors(pId);
+    const [contributors, amounts] = await contract.getContributions(pId);
 
-    const parsedContributors = [];
+    const parsedContributors: { contributor: string; amount: string }[] = [];
+
+    if (!contributors || !amounts) return parsedContributors;
 
     for (let i = 0; i < contributors.length; i++) {
       parsedContributors.push({

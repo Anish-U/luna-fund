@@ -28,3 +28,8 @@ export interface LunaFundContextType {
   checkIfWalletConnected: () => Promise<void>;
   connectWallet: () => Promise<void>;
 }
+
+export interface Contribution {
+  contributor: string;
+  amount: number;
+}

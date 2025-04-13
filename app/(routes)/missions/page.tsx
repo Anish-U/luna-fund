@@ -1,10 +1,10 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
 
 import { LunaFundContext } from "@/context/LunaFund";
 import { Mission } from "@/types/mission";
+import MissionsSection from "@/components/organisms/missions";
 
 export interface PageProps {}
 
@@ -15,7 +15,6 @@ export default function Page({}: PageProps) {
   useEffect(() => {
     const _getAllMissions = async () => {
       const res = await getAllMissions();
-      console.log(res);
       setMissions(res);
     };
 
@@ -23,19 +22,9 @@ export default function Page({}: PageProps) {
   }, [currentAccount, getAllMissions]);
 
   return (
-    <div>
-      All Missions Page
-      {missions.map((mission) => (
-        <div key={mission.pId} className="flex flex-col p-4">
-          <p>Creator: {mission.creator}</p>
-          <p>Title: {mission.title}</p>
-          <p>Description: {mission.description}</p>
-          <p>Target Amount{mission.targetAmount}</p>
-          <p>Raised: {mission.totalRaised}</p>
-          <p>Completed: {mission.completed}</p>
-          <Link href={`/missions/${mission.pId}/`}>View Mission</Link>
-        </div>
-      ))}
+    <div className=" px-20 p-2 flex flex-col gap-4">
+      <h1 className="text-4xl font-primary mb-4">Missions</h1>
+      <MissionsSection missions={[...missions, ...missions]} />
     </div>
   );
 }

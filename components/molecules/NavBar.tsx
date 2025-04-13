@@ -3,6 +3,9 @@
 import { FC, useContext } from "react";
 
 import { LunaFundContext } from "@/context/LunaFund";
+import Button from "../atoms/button";
+import Image from "next/image";
+import Link from "next/link";
 
 export interface NavBarProps {}
 
@@ -10,18 +13,31 @@ const NavBar: FC<NavBarProps> = () => {
   const { currentAccount, connectWallet } = useContext(LunaFundContext);
 
   return (
-    <div className="flex gap-4 flex-row items-center p-4 bg-blue-500 text-white">
-      <h1 className="text-2xl font-bold">Luna Fund</h1>
-      {!currentAccount && (
-        <button
-          type="button"
-          onClick={connectWallet}
-          className="p-2 border rounded-md cursor-pointer"
-        >
-          Connect
-        </button>
-      )}
-    </div>
+    <header className="flex justify-between items-center px-12 pb-2">
+      <div className="flex items-center justify-center">
+        <Image
+          src="/images/logo.png"
+          alt="logo"
+          height={150}
+          width={150}
+          className="object-cover -ml-4"
+        />
+        <h1 className="-ml-6 md:-ml-4 md:text-4xl text-2xl font-primary text-nowrap">
+          <Link href="/">Luna Fund</Link>
+        </h1>
+      </div>
+      <div className="ml-auto md:w-fit flex items-center justify-center text-sm">
+        {currentAccount ? (
+          <Button type="primary" disabled>
+            {currentAccount.slice(0, 3) + "..." + currentAccount.slice(-3)}
+          </Button>
+        ) : (
+          <Button onClick={connectWallet} type="primary">
+            Connect Wallet
+          </Button>
+        )}
+      </div>
+    </header>
   );
 };
 
