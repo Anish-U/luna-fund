@@ -14,18 +14,20 @@ const NavBar: FC<NavBarProps> = () => {
 
   return (
     <header className="flex justify-between items-center px-12 pb-2">
-      <div className="flex items-center justify-center">
-        <Image
-          src="/images/logo.png"
-          alt="logo"
-          height={150}
-          width={150}
-          className="object-cover -ml-4"
-        />
-        <h1 className="-ml-6 md:-ml-4 md:text-4xl text-2xl font-primary text-nowrap">
-          <Link href="/">Luna Fund</Link>
-        </h1>
-      </div>
+      <Link href="/">
+        <div className="flex items-center justify-center">
+          <Image
+            src="/images/logo.png"
+            alt="logo"
+            height={150}
+            width={150}
+            className="object-cover -ml-4"
+          />
+          <h1 className="-ml-6 md:-ml-4 md:text-4xl text-2xl font-primary text-nowrap">
+            Luna Fund
+          </h1>
+        </div>
+      </Link>
       <div className="ml-auto md:w-fit flex items-center justify-center text-sm">
         {currentAccount ? (
           <Button type="primary" disabled>

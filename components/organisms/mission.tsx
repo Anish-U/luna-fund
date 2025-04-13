@@ -21,7 +21,7 @@ const MissionSection: FC<MissionPageSection> = ({ mission }) => {
   const [contributions, setContributions] = useState<Contribution[]>();
 
   const randomImage = () => {
-    const images = ["1", "2", "3"];
+    const images = ["1", "2", "3", "4"];
     return images[Math.floor(Math.random() * images.length)];
   };
 
@@ -73,10 +73,10 @@ const MissionSection: FC<MissionPageSection> = ({ mission }) => {
         />
       </div>
       <div className="text-md py-2">Creator: {mission.creator}</div>
-      <div className="lg:w-[70%] text-lg text-justify">
+      <div className="lg:w-[65%] text-lg text-justify">
         Goal: {mission.description}
       </div>
-      <div className="flex justify-center flex-col gap-2 lg:w-[70%] mt-4 md:mt-6">
+      <div className="flex justify-center flex-col gap-2 lg:w-[65%] mt-4 md:mt-6">
         <ProgressBar
           percentage={
             ((mission.totalRaised || 0) / (mission.targetAmount || 1)) * 100

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
+import Link from "next/link";
 
 import { LunaFundContext } from "@/context/LunaFund";
 import { Mission } from "@/types/mission";
@@ -37,6 +38,9 @@ export default function Page({ params }: PageProps) {
 
   return (
     <div className=" px-20 p-2 flex flex-col gap-4">
+      <Link href="/missions" className="text-sm underline">
+        Back to all Missions
+      </Link>
       {mission && <MissionSection mission={mission} />}
     </div>
   );
