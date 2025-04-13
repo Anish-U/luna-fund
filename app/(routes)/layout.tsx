@@ -24,7 +24,7 @@ export default function RootLayout({
         <ClientWrapper>
           <div className="flex flex-col min-h-screen font-secondary">
             <NavBar />
-            <div className="flex-1">{children}</div>
+            <div className="flex-1 flex">{children}</div>
             <Footer />
           </div>
         </ClientWrapper>

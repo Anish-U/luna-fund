@@ -37,7 +37,7 @@ export default function Page({ params }: PageProps) {
   }, [getMission, params]);
 
   return (
-    <div className=" px-20 p-2 flex flex-col gap-4">
+    <div className="px-20 p-2 flex flex-col gap-4 flex-1">
       <Link href="/missions" className="text-sm underline">
         Back to all Missions
       </Link>

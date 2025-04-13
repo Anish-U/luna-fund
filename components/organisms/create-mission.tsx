@@ -92,7 +92,7 @@ const CreateMissionPageSection: FC<CreateMissionPageSectionProps> = ({
       </div>
       <div className="mt-4 md:mt-6 w-[63%] ">
         <Button type="secondary" onClick={_createMission} disabled={isLoading}>
-          Create Mission
+          Launch Mission
         </Button>
       </div>
     </div>

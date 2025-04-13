@@ -10,11 +10,11 @@ import Button from "@/components/atoms/button";
 import { Contribution, Mission } from "@/types/mission";
 import { LunaFundContext } from "@/context/LunaFund";
 
-export interface MissionPageSection {
+export interface MissionPageSectionProps {
   mission: Mission;
 }
 
-const MissionSection: FC<MissionPageSection> = ({ mission }) => {
+const MissionSection: FC<MissionPageSectionProps> = ({ mission }) => {
   const { getContributions, contributeFuel } = useContext(LunaFundContext);
   const inputValue = 1;
 

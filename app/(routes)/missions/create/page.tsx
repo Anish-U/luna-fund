@@ -24,7 +24,7 @@ export default function Page({}: PageProps) {
   };
 
   return (
-    <div className=" px-20 p-2 flex flex-col gap-4">
+    <div className="px-20 p-2 flex-1 flex flex-col gap-4">
       <Link href="/missions" className="text-sm underline mb-4">
         Back to all Missions
       </Link>
