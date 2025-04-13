@@ -10,7 +10,7 @@ const NavBar: FC<NavBarProps> = () => {
   const { currentAccount, connectWallet } = useContext(LunaFundContext);
 
   return (
-    <div className="flex gap-4 flex-row items-center p-4">
+    <div className="flex gap-4 flex-row items-center p-4 bg-blue-500 text-white">
       <h1 className="text-2xl font-bold">Luna Fund</h1>
       {!currentAccount && (
         <button
